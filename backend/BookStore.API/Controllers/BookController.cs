@@ -11,8 +11,25 @@ namespace BookStore.API.Controllers
         private BookDbContext _bookContext;
         
         public BookController(BookDbContext temp) => _bookContext = temp;
-       
-        [HttpGet]
-        public IEnumerable<Book> GetBooks() => _bookContext.Books.ToList();
+
+        [HttpGet("AllBooks")]
+        public IActionResult GetBooks(int pageSize = 5, int pageNum = 1)
+        {
+            var something =  _bookContext.Books
+                        .Skip((pageNum - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToList();
+                        
+            var totalNumBooks = _bookContext.Books.Count();
+            
+            var someObject = new
+            {
+                Books = something,
+                TotalNumBooks = totalNumBooks
+            };
+            return Ok(someObject);
+        }
+        
+        
     }
 }
